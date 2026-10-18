@@ -1,6 +1,6 @@
 'use client';
 
-import { useNoteStore } from '../../lib/store/notestore';
+import { useNoteStore } from '../../lib/store/noteStore';
 import { useRouter } from 'next/navigation';
 import css from './NoteForm.module.css';
 
