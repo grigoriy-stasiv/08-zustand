@@ -2,10 +2,13 @@
 
 import { useNoteStore } from '../../lib/store/noteStore';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import { createNote } from '@/lib/api';
 import css from './NoteForm.module.css';
 
 export default function NoteForm() {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const draft = useNoteStore(state => state.draft);
   const setDraft = useNoteStore(state => state.setDraft);
@@ -23,10 +26,19 @@ export default function NoteForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
+      await createNote({
+        title: draft.title,
+        content: draft.content,
+        tag: draft.tag as 'Todo' | 'Work' | 'Personal',
+      });
+
+      queryClient.invalidateQueries({ queryKey: ['notes'] });
+
       clearDraft();
+
       router.push('/notes/filter/all');
     } catch (error) {
-      console.error(error);
+      console.error('Помилка при створенні нотатки:', error);
     }
   };
 
