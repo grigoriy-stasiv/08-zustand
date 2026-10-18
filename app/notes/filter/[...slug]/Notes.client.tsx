@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
 import Link from 'next/link';
@@ -20,11 +20,10 @@ export default function NotesClient({ tag = 'all' }: NotesClientProps) {
   const perPage = 8;
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const [prevTag, setPrevTag] = useState(tag);
-  if (tag !== prevTag) {
-    setPrevTag(tag);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPage(1);
-  }
+  }, [tag]);
 
   const { data, error, isLoading } = useQuery({
     queryKey: ['notes', { page, perPage, search: debouncedSearch, tag }],
