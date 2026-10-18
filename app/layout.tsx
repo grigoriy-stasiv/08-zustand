@@ -9,6 +9,7 @@ import type { Metadata } from 'next';
 const roboto = Roboto({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '700'],
+  variable: '--font-roboto',
   display: 'swap',
 });
 
@@ -44,7 +45,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
     <html lang="uk">
-      <body className={roboto.className}>
+      <body className={`${roboto.className} ${roboto.variable}`}>
         <TanStackProvider>
           <Header />
           <main>

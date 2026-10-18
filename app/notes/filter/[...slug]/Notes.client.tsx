@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useDebounce } from 'use-debounce';
-import Link from 'next/link'; // Додали імпорт Link для навігації
+import Link from 'next/link';
 import { fetchNotes } from '@/lib/api';
 import SearchBox from '@/components/SearchBox/SearchBox';
 import NoteList from '@/components/NoteList/NoteList';
@@ -21,10 +21,9 @@ export default function NotesClient({ tag = 'all' }: NotesClientProps) {
   const [debouncedSearch] = useDebounce(search, 500);
 
   const [prevTag, setPrevTag] = useState(tag);
-
   if (tag !== prevTag) {
-    setPage(1);
     setPrevTag(tag);
+    setPage(1);
   }
 
   const { data, error, isLoading } = useQuery({
@@ -81,7 +80,6 @@ export default function NotesClient({ tag = 'all' }: NotesClientProps) {
           />
         )}
 
-        {}
         <Link
           href="/notes/action/create"
           className={css.button || css.createButton || ''}

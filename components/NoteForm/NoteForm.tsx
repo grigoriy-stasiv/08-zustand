@@ -29,7 +29,7 @@ export default function NoteForm() {
       await createNote({
         title: draft.title,
         content: draft.content,
-        tag: draft.tag as 'Todo' | 'Work' | 'Personal',
+        tag: draft.tag as 'Todo' | 'Work' | 'Personal' | 'Meeting' | 'Shopping',
       });
 
       queryClient.invalidateQueries({ queryKey: ['notes'] });
@@ -88,6 +88,9 @@ export default function NoteForm() {
           <option value="Todo">Todo</option>
           <option value="Work">Work</option>
           <option value="Personal">Personal</option>
+          {}
+          <option value="Meeting">Meeting</option>
+          <option value="Shopping">Shopping</option>
         </select>
       </div>
 
@@ -108,6 +111,4 @@ export default function NoteForm() {
       </div>
     </form>
   );
-}
-{
 }

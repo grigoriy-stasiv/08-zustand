@@ -5,6 +5,20 @@ import css from './page.module.css';
 export const metadata: Metadata = {
   title: 'Create note | NoteHub',
   description: 'Сторінка для створення нової нотатки',
+  openGraph: {
+    title: 'Create note | NoteHub',
+    description: 'Сторінка для створення нової нотатки',
+    url: 'https://notehub.com',
+    type: 'website',
+    images: [
+      {
+        url: 'https://goit.global',
+        width: 1200,
+        height: 630,
+        alt: 'NoteHub',
+      },
+    ],
+  },
 };
 
 export default function CreateNotePage() {
