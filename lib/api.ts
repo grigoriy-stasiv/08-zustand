@@ -26,15 +26,25 @@ export const fetchNotes = async ({
   search: string;
   tag?: string;
 }): Promise<FetchNotesResponse> => {
-  const params: Record<string, string | number> = { page, perPage };
+  
+  const apiTagMap: Record<string, string> = {
+    work: 'Work',
+    personal: 'Personal',
+    meeting: 'Meeting',
+    todo: 'Todo',
+    shopping: 'Shopping',
+  };
 
-  if (search.trim()) {
-    params.search = search;
-  }
+  const normalizedTag = tag && tag.toLowerCase() !== 'all' 
+    ? (apiTagMap[tag.toLowerCase()] || tag) 
+    : undefined;
 
-  if (tag && tag !== 'all') {
-    params.tag = tag;
-  }
+  const params: Record<string, string | number | undefined> = {
+    page,
+    perPage,
+    search: search.trim() !== '' ? search.trim() : undefined,
+    tag: normalizedTag,
+  };
 
   const { data } = await instance.get<FetchNotesResponse>('/', {
     params,
@@ -42,6 +52,9 @@ export const fetchNotes = async ({
 
   return data;
 };
+
+
+
 
 export const createNote = async (note: CreateNoteInput): Promise<Note> => {
   const { data } = await instance.post<Note>('/', note);

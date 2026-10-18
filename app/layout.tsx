@@ -1,22 +1,59 @@
-import './globals.css'; import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
+import './globals.css';
+import TanStackProvider from '@/components/TanStackProvider/TanStackProvider';
 import Header from '@/components/Header/Header';
 import Footer from '@/components/Footer/Footer';
 import type { ReactNode } from 'react';
+import { Roboto } from 'next/font/google';
+import type { Metadata } from 'next';
 
-export const metadata = { title: 'NoteHub', description: 'Your notes app', };
+const roboto = Roboto({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+});
 
-type RootLayoutProps = { children: ReactNode; modal: ReactNode; };
+export const metadata: Metadata = {
+  title: {
+    default: 'NoteHub',
+    template: '%s | NoteHub',
+  },
+  description: 'Your notes app — organize and manage your notes easily.',
+  openGraph: {
+    title: 'NoteHub',
+    description: 'Organize and manage your notes easily.',
+    url: 'https://notehub-app.vercel.app',
+    siteName: 'NoteHub',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'NoteHub — your notes app',
+      },
+    ],
+    locale: 'uk_UA',
+    type: 'website',
+  },
+};
+
+type RootLayoutProps = {
+  children: ReactNode;
+  modal: ReactNode;
+};
+
 export default function RootLayout({ children, modal }: RootLayoutProps) {
   return (
-    <html lang="uk"><body>
-      <TanStackProvider>
-        <Header />
-        <main>
-          {children}
-          {modal}
-        </main>
-        <Footer />
-      </TanStackProvider>
-    </body></html>
+    <html lang="uk">
+      <body className={roboto.className}>
+        <TanStackProvider>
+          <Header />
+          <main>
+            {children}
+            {modal}
+          </main>
+          <Footer />
+        </TanStackProvider>
+      </body>
+    </html>
   );
 }

@@ -1,107 +1,99 @@
-import React from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createNote } from '@/lib/api';
-import type { CreateNoteInput, NoteTag } from '@/types/note';
+'use client';
+
+import { useNoteStore } from '../../lib/store/notestore';
+import { useRouter } from 'next/navigation';
 import css from './NoteForm.module.css';
 
-interface INoteFormProps {
-  onCancel: () => void;
-}
+export default function NoteForm() {
+  const router = useRouter();
 
-const validationSchema = Yup.object().shape({
-  title: Yup.string()
-    .min(3, 'Minimum 3 characters')
-    .max(50, 'Maximum 50 characters')
-    .required('Required field'),
-  content: Yup.string()
-    .max(500, 'Maximum 500 characters'),
-  tag: Yup.string()
-    .oneOf(['Todo', 'Work', 'Personal', 'Meeting', 'Shopping'] as NoteTag[])
-    .required('Required field'),
-});
+  const draft = useNoteStore(state => state.draft);
+  const setDraft = useNoteStore(state => state.setDraft);
+  const clearDraft = useNoteStore(state => state.clearDraft);
 
-const initialValues: CreateNoteInput = {
-  title: '',
-  content: '',
-  tag: 'Todo',
-};
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const { name, value } = e.target;
+    setDraft({ [name]: value });
+  };
 
-export const NoteForm: React.FC<INoteFormProps> = ({ onCancel }) => {
-  const queryClient = useQueryClient();
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: createNote,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['notes'] });
-      onCancel(); 
-    },
-    onError: (error: unknown) => {
-      console.error('Error creating note globally:', error);
-    },
-  });
-
-  const handleSubmit = (values: CreateNoteInput, { resetForm }: { resetForm: () => void }) => {
-    console.log('Дані, що надсилаються на сервер:', values);
-
-    mutate(values, {
-      onSuccess: () => {
-        resetForm();
-      },
-      onError: (error: unknown) => {
-        const err = error as { response?: { data?: unknown }; message?: string };
-        console.error('Помилка сервера при створенні нотатки:', err.response?.data || err.message);
-      }
-    });
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      clearDraft();
+      router.push('/notes/filter/all');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={handleSubmit}
-    >
-      {() => (
-        <Form className={css.form}>
-          <div className={css.formGroup}>
-            <label htmlFor="title">Title</label>
-            <Field id="title" type="text" name="title" className={css.input} />
-            <ErrorMessage name="title" component="span" className={css.error} />
-          </div>
+    <form onSubmit={handleSubmit} className={css.form || ''}>
+      <div className={css.fieldGroup || ''}>
+        <label htmlFor="title" className={css.label || ''}>
+          Title
+        </label>
+        <input
+          type="text"
+          id="title"
+          name="title"
+          value={draft?.title || ''}
+          onChange={handleChange}
+          className={css.input || ''}
+          required
+        />
+      </div>
 
-          <div className={css.formGroup}>
-            <label htmlFor="content">Content</label>
-            <Field id="content" as="textarea" name="content" rows={6} className={css.textarea} />
-            <ErrorMessage name="content" component="span" className={css.error} />
-          </div>
+      <div className={css.fieldGroup || ''}>
+        <label htmlFor="content" className={css.label || ''}>
+          Content
+        </label>
+        <textarea
+          id="content"
+          name="content"
+          value={draft?.content || ''}
+          onChange={handleChange}
+          className={css.textarea || ''}
+          required
+        />
+      </div>
 
-          <div className={css.formGroup}>
-            <label htmlFor="tag">Tag</label>
-            <Field id="tag" as="select" name="tag" className={css.select}>
-              <option value="Todo">Todo</option>
-              <option value="Work">Work</option>
-              <option value="Personal">Personal</option>
-              <option value="Meeting">Meeting</option>
-              <option value="Shopping">Shopping</option>
-            </Field>
-            <ErrorMessage name="tag" component="span" className={css.error} />
-          </div>
+      <div className={css.fieldGroup || ''}>
+        <label htmlFor="tag" className={css.label || ''}>
+          Tag
+        </label>
+        <select
+          id="tag"
+          name="tag"
+          value={draft?.tag || 'Todo'}
+          onChange={handleChange}
+          className={css.select || ''}
+          required
+        >
+          <option value="Todo">Todo</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+        </select>
+      </div>
 
-          <div className={css.actions}>
-            <button type="button" className={css.cancelButton} onClick={onCancel}>
-              Cancel
-            </button>
-            {}
-            <button type="submit" className={css.submitButton} disabled={isPending}>
-              {isPending ? 'Creating...' : 'Create note'}
-            </button>
-          </div>
-        </Form>
-      )}
-    </Formik>
+      <div className={css.actions || ''}>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className={css.buttonCancel || css.cancelButton || ''}
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          className={css.buttonSubmit || css.submitButton || ''}
+        >
+          Create
+        </button>
+      </div>
+    </form>
   );
-};
-
-
-export default NoteForm;
+}
