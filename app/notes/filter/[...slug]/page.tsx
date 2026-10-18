@@ -67,7 +67,7 @@ export async function generateMetadata({
     openGraph: {
       title,
       description,
-      url: `https://notehub.com{tag}`,
+      url: `https://notehub.com/${tag}`,
       images: [
         {
           url: 'https://goit.global',
